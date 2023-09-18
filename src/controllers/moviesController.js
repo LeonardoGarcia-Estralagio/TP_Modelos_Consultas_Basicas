@@ -11,13 +11,42 @@ module.exports = {
         console.log('Error en la conexión', error);
     }));
   },
+  detail: (req, res) => {
+    const {id} = req.params;
+    db.Movie.findByPk(id)
+      .then(movie =>{
+        return res.render('moviesDetail', {
+          movie
+        })
+      })
+      .catch(error => console.log(error))
+    
+  },
   new: (req, res) => {
-    res.send("Ultimas peliculas");
+    db.Movie.findAll({
+      order : [
+        ['release_date','DESC']
+      ]
+    })
+    .then(movies => {
+      res.render('newestMovies',{
+        movies
+      })
+    })
+    .catch(error => console.log(error))
   },
   recomended: (req, res) => {
-    res.send("Peliculas recomendadas");
-  },
-  detail: (req, res) => {
-    res.send("Detalles de la peliculas");
-  },
+    db.Movie.findAll({
+      limit : 5,
+      order : [
+        ['rating', 'DESC']
+      ]
+    })
+    .then(movies => {
+      return res.render('recommendedMovies',{
+        movies
+      })
+    })
+    .catch(error => console.log(error))
+  }
 };
